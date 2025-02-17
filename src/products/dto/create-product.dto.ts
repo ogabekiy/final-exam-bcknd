@@ -27,6 +27,9 @@ export class CreateProductDto {
   @IsNotEmpty()
   description: string;
 
+  
+
+
   @IsInt()
   @IsPositive()
   @Min(0)
