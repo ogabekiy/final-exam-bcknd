@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UploadedFiles, UseInterceptors, Get, Param, Patch, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Body, UploadedFiles, UseInterceptors, Get, Param, Patch, Delete, NotFoundException, UseGuards } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -6,6 +6,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { RemoveImg } from './dto/remove-img.dto';
+import { RoleGuard } from 'src/common/guards/roleGuard';
+import { Roles } from 'src/common/guards/roles.decorator';
 
 @Controller('products')
 export class ProductsController {
@@ -61,6 +63,7 @@ export class ProductsController {
   }
   
 
+
   @Patch('addImage/:id')
   @UseInterceptors(FilesInterceptor('images', 20, {
   dest: './uploads',
@@ -94,6 +97,21 @@ async addImage(@Param('id') id: string, @UploadedFiles() files: Express.Multer.F
 
   return updatedProduct;
 }
+
+  @UseGuards(RoleGuard)
+  @Roles('admin')
+  @Get('approve/:id') 
+  approve(@Param('id') id:string){
+    return this.productsService.approveProduct(+id)
+  }
+
+  @Get('all-notApproved')
+    notApproved(){
+  return this.productsService.findAllNotApproved();
+}
+
+
+
 
 
   @Delete(':id')

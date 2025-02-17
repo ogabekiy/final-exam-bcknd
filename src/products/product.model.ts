@@ -38,6 +38,13 @@ export class Product extends Model<Product>{
     description: string
 
     @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false, 
+      })
+      approved: boolean;
+
+    @Column({
         type: DataType.INTEGER,
         allowNull:false
     })

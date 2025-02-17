@@ -16,7 +16,7 @@ export class ProductsService {
   }
 
   async findAll() {
-    const products = await this.ProductModel.findAll({
+    const products = await this.ProductModel.findAll({where: {approved:true},
       include: [{ model: User }, { model: Category }, { model: Review }]
     });
   
@@ -54,6 +54,27 @@ export class ProductsService {
     return data;
   }
 
+  async approveProduct(id:number){
+      const data = await this.ProductModel.findOne({where: {id:id}})
+      if(!data){
+        throw new NotFoundException('product not found')
+      }
+
+      data.approved = true
+      await data.save()
+      return 'done'
+  }
+
+  async findAllNotApproved() {
+    // const products = await this.ProductModel.findAll({
+    //   where: {
+    //   },
+    // });
+    
+    return "super";
+  }
+  
+
   async update(id: number, updateProductDto: UpdateProductDto) {
     const data = await this.ProductModel.findOne({where:{id}})
     if(!data){
@@ -63,7 +84,10 @@ export class ProductsService {
     console.log(updateProductDto);
     
     return await this.ProductModel.update(updateProductDto,{where: {id}});
-  }
+  } 
+
+
+
 
   async remove(id: number) {
     const data = await this.ProductModel.findOne({where:{id}})

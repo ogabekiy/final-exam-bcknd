@@ -13,7 +13,7 @@ export class ReviewsService {
   async create(createReviewDto: CreateReviewDto) {
     const data = await this.ReviewModel.findOne({where: {user_id: createReviewDto.user_id,product_id: createReviewDto.product_id}})
     if(data){
-      throw new NotFoundException('yu can give rate 2 times')
+      throw new NotFoundException('yu cant give rate 2 times')
     }
     return await this.ReviewModel.create(createReviewDto);
   }

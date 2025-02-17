@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt, IsNumber, IsPositive, IsArray, Min, ArrayMinSize, IsOptional, IsUrl } from "class-validator";
+import { IsNotEmpty, IsString, IsInt, IsNumber, IsPositive, IsArray, Min, ArrayMinSize, IsOptional, IsUrl, IsBoolean } from "class-validator";
 import { Type } from "class-transformer";
 
 export class CreateProductDto {
@@ -27,7 +27,9 @@ export class CreateProductDto {
   @IsNotEmpty()
   description: string;
 
-  
+  @IsBoolean()
+  @IsOptional()
+  approved?: boolean = false
 
 
   @IsInt()
