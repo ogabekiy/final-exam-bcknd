@@ -1,4 +1,5 @@
 import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+import { CartProducts } from "src/cart_products/cart_product.model";
 import { Category } from "src/categories/category.model";
 import { Review } from "src/reviews/review.model";
 import { User } from "src/users/user.model";
@@ -72,4 +73,7 @@ export class Product extends Model<Product>{
 
     @HasMany(() => Review)
     reviews: Review[]
+
+    @HasMany(() => CartProducts)
+    cart_product: CartProducts[]
 }

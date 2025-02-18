@@ -46,6 +46,11 @@ export class ProductsController {
   findAll() {
     return this.productsService.findAll();
   }
+  
+  @Get('all-notApproved')
+  notApproved(){
+      return this.productsService.findAllNotApproved();
+}
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -62,8 +67,6 @@ export class ProductsController {
   return this.productsService.removeImage(body.imgUrl, id);
   }
   
-
-
   @Patch('addImage/:id')
   @UseInterceptors(FilesInterceptor('images', 20, {
   dest: './uploads',
@@ -104,15 +107,6 @@ async addImage(@Param('id') id: string, @UploadedFiles() files: Express.Multer.F
   approve(@Param('id') id:string){
     return this.productsService.approveProduct(+id)
   }
-
-  @Get('all-notApproved')
-    notApproved(){
-  return this.productsService.findAllNotApproved();
-}
-
-
-
-
 
   @Delete(':id')
   remove(@Param('id') id: string) {

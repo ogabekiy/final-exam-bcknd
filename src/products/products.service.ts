@@ -66,12 +66,12 @@ export class ProductsService {
   }
 
   async findAllNotApproved() {
-    // const products = await this.ProductModel.findAll({
-    //   where: {
-    //   },
-    // });
+    const products = await this.ProductModel.findAll({
+      where: {approved: false
+      },
+    });
     
-    return "super";
+    return products;
   }
   
 

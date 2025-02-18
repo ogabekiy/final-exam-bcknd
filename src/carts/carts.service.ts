@@ -3,6 +3,7 @@ import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Cart } from './cart.model';
+import { CartProducts } from 'src/cart_products/cart_product.model';
 
 @Injectable()
 export class CartsService {
@@ -13,7 +14,7 @@ export class CartsService {
   }
 
   async findAll() {
-    return await this.CartModel.findAll();
+    return await this.CartModel.findAll({include: {model: CartProducts}});
   }
 
   async findOne(id: number) {
