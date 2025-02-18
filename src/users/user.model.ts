@@ -1,6 +1,7 @@
 import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { CartProducts } from "src/cart_products/cart_product.model";
 import { Cart } from "src/carts/cart.model";
+import { Order } from "src/orders/order.model";
 import { Product } from "src/products/product.model";
 import { Review } from "src/reviews/review.model";
 
@@ -80,4 +81,7 @@ export class User extends Model<User>{
 
     @HasMany(() => Cart)
     carts: Cart[]
+
+    @HasMany(() => Order)
+    order: Order[]
 }

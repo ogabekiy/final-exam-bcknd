@@ -6,6 +6,9 @@ export class CreateCartDto {
     user_id: number
 
     @IsOptional()
-    @IsNotEmpty()
     status:string
+
+    @IsNumber()
+    @IsOptional()
+    total_price: number
 }

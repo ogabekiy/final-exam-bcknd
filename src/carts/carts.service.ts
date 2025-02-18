@@ -18,7 +18,7 @@ export class CartsService {
   }
 
   async findOne(id: number) {
-    return await this.CartModel.findOne({where: {id}});
+    return await this.CartModel.findOne({where: {id},include:{model: CartProducts}});
   }
 
   update(id: number, updateCartDto: UpdateCartDto) {
