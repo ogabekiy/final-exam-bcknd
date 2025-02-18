@@ -77,9 +77,18 @@ export class OrdersController {
   }
 
   @UseGuards(RoleGuard)
-  @Roles('admin')
+  @Roles('user')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string,@Request() req:any) {
+
+    const authId = req.user.dataValues.id
+
+    const data = await this.ordersService.findOne(+id)
+
+    if(authId !== +data.user_id){
+        throw new ForbiddenException('nice try diddy')
+    }
+
     return this.ordersService.cancelOrder(+id);
   }
 }

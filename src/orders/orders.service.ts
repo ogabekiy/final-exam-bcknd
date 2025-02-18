@@ -14,12 +14,19 @@ export class OrdersService {
   ){}
 
   async create(createOrderDto: CreateOrderDto) {
-    const dataCart = await this.CartModel.findOne({where:{id:createOrderDto.cart_id}})
+    console.log(createOrderDto);
+    
+    const dataCart = await this.CartModel.findOne({where: {id: +createOrderDto.cart_id},include:{model: CartProducts}});
+    console.log('xa',dataCart);
 
     if(dataCart){
       dataCart.status = 'ordered'
       await dataCart.save()
+    } else{
+      throw new NotFoundException('cart not found')
     }
+    // console.log('xa',dataCart);
+    
 
     createOrderDto.total_price = dataCart.total_price
 

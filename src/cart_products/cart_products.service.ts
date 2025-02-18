@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateCartProductDto } from './dto/create-cart_product.dto';
 import { UpdateCartProductDto } from './dto/update-cart_product.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -41,17 +41,26 @@ export class CartProductsService {
       throw new NotFoundException('Product not found');
     }
 
+    if (createCartProductDto.quantity > product.quantity) {
+      throw new BadRequestException('Requested quantity exceeds available stock');
+    }
+
     if (existingProduct) {
-      existingProduct.quantity += 1;
-
-      ActiveCart.total_price += product.price;
+      const newQuantity = existingProduct.quantity + createCartProductDto.quantity;
+      if (newQuantity > product.quantity) {
+        throw new BadRequestException('Requested quantity exceeds available stock');
+      }
+      existingProduct.quantity = newQuantity;
+      ActiveCart.total_price += product.price * createCartProductDto.quantity;
       await ActiveCart.save(); 
-
       return await existingProduct.save();
     }
 
-    const newCartProduct = await this.CartProductsModel.create(createCartProductDto);
+    if (createCartProductDto.quantity <= 0) {
+      throw new BadRequestException('Quantity must be at least 1');
+    }
 
+    const newCartProduct = await this.CartProductsModel.create(createCartProductDto);
     ActiveCart.total_price += product.price * createCartProductDto.quantity;
     await ActiveCart.save(); 
 
@@ -64,8 +73,8 @@ export class CartProductsService {
     });
   }
 
-  async findAllOfUser(UserId:number) {
-    return await this.CartProductsModel.findAll({  where:{user_id:UserId}, include: { model: Cart },});
+  async findAllOfUser(UserId: number) {
+    return await this.CartProductsModel.findAll({ where: { user_id: UserId }, include: { model: Cart }, });
   }
 
   async findOne(id: number) {
@@ -85,20 +94,32 @@ export class CartProductsService {
       throw new NotFoundException('Cart product not found');
     }
 
-    await this.CartProductsModel.update(updateCartProductDto, { where: { id } });
-
-    const updatedProduct = await this.CartProductsModel.findOne({ where: { id } });
-    const product = await this.ProductModel.findByPk(updatedProduct.product_id);
-
+    const product = await this.ProductModel.findByPk(data.product_id);
     if (!product) {
       throw new NotFoundException('Product not found');
     }
 
-    const ActiveCart = await this.CartModel.findByPk(updatedProduct.cart_id);
-    ActiveCart.total_price = await this.recalculateTotalPrice(ActiveCart.id);
+    if (updateCartProductDto.quantity > product.quantity) {
+      throw new BadRequestException('Requested quantity exceeds available stock');
+    }
+
+    const ActiveCart = await this.CartModel.findByPk(data.cart_id);
+    if (!ActiveCart) {
+      throw new NotFoundException('Cart not found');
+    }
+
+    if (updateCartProductDto.quantity <= 0) {
+      throw new BadRequestException('Quantity must be at least 1');
+    }
+
+    const oldQuantity = data.quantity;
+    await this.CartProductsModel.update(updateCartProductDto, { where: { id } });
+    const updatedProduct = await this.CartProductsModel.findOne({ where: { id } });
+
+    ActiveCart.total_price += product.price * (updatedProduct.quantity - oldQuantity);
     await ActiveCart.save(); 
 
-    return data;
+    return updatedProduct;
   }
 
   async remove(id: number) {
@@ -111,27 +132,11 @@ export class CartProductsService {
     const product = await this.ProductModel.findByPk(data.product_id);
 
     if (product && ActiveCart) {
-      await this.CartProductsModel.destroy({ where: { id } });
-
       ActiveCart.total_price -= product.price * data.quantity;
-      await ActiveCart.save(); 
+      await ActiveCart.save();
+      await this.CartProductsModel.destroy({ where: { id } });
     }
 
     return data;
-  }
-
-  private async recalculateTotalPrice(cartId: number): Promise<number> {
-    const cartProducts = await this.CartProductsModel.findAll({
-      where: { cart_id: cartId },
-    });
-
-    let total = 0;
-    for (const cartProduct of cartProducts) {
-      const product = await this.ProductModel.findByPk(cartProduct.product_id);
-      if (product) {
-        total += product.price * cartProduct.quantity;
-      }
-    }
-    return total;
   }
 }

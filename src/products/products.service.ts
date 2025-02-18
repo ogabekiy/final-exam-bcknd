@@ -87,7 +87,7 @@ export class ProductsService {
             [Op.or]: [
                 { title: { [Op.iLike]: `%${query}%` } },
                 { description: { [Op.iLike]: `%${query}%` } }
-            ]
+            ],approved: true
         }
     });
 }

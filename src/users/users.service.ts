@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -61,7 +61,7 @@ export class UsersService {
     const data = await this.UserModel.findOne({where:{id:id}})
 
     if(!data){
-      throw new Error('user with this id dont exist')
+      throw new NotFoundException('user with this id dont exist')
     }
 
     return data;
@@ -70,7 +70,7 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     const data = await this.UserModel.findOne({where:{id:id}})
     if(!data){
-      throw new Error('user with this id dont exist')
+      throw new NotFoundException('user with this id dont exist')
     }
     return await this.UserModel.update(updateUserDto,{where:{id}}) ;
   }
@@ -78,9 +78,13 @@ export class UsersService {
   async remove(id: number) {
     const data = await this.UserModel.findOne({where:{id:id}})
     if(!data){
-      throw new Error('user with this id dont exist')
+      throw new NotFoundException('user with this id dont exist')
     }
-    return await this.UserModel.destroy({where:{id}});
+    try {
+      return await this.UserModel.destroy({where:{id}});
+    } catch (error) {
+       throw new Error(error.message)
+    }
   }
 
   

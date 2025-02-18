@@ -18,6 +18,8 @@ export class CartsService {
   }
 
   async findOne(id: number) {
+    console.log('xa');
+    
     return await this.CartModel.findOne({where: {id},include:{model: CartProducts}});
   }
 
