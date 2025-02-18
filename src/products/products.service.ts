@@ -6,6 +6,7 @@ import { Product } from './product.model';
 import { User } from 'src/users/user.model';
 import { Category } from 'src/categories/category.model';
 import { Review } from 'src/reviews/review.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductsService {
@@ -78,6 +79,19 @@ export class ProductsService {
     const products = await this.ProductModel.findAll({where: {approved: false,seller_id:id },});
     return products;
   }
+
+
+  async searchForProduct(query: string) {
+    return await this.ProductModel.findAll({
+        where: {
+            [Op.or]: [
+                { title: { [Op.iLike]: `%${query}%` } },
+                { description: { [Op.iLike]: `%${query}%` } }
+            ]
+        }
+    });
+}
+  
   
 
   async update(id: number, updateProductDto: UpdateProductDto) {

@@ -53,6 +53,11 @@ export class ProductsController {
   findAll() {
     return this.productsService.findAll();
   }
+
+  @Get('search/:query')
+  async searchForProoduct(@Param('query') query: string){
+    return await this.productsService.searchForProduct(query)
+  }
   
   @UseGuards(RoleGuard)
   @Roles('admin','seller')

@@ -22,6 +22,11 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
+  @Get('filter/:title')
+  findAllOfCategory(@Param('title') title: string) {
+    return this.categoriesService.findAllOfCategory(title);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(+id);

@@ -7,7 +7,9 @@ import { Product } from 'src/products/product.model';
 
 @Injectable()
 export class CategoriesService {
-  constructor(@InjectModel(Category) private CategoryModel: typeof Category){}
+  constructor(@InjectModel(Category) private CategoryModel: typeof Category,
+  @InjectModel(Product) private ProductModel: typeof Product
+  ){}
 
   async create(createCategoryDto: CreateCategoryDto) {
     const data = await this.CategoryModel.findOne({where:{title: createCategoryDto.title}}) 
@@ -20,6 +22,12 @@ export class CategoriesService {
   async findAll() {
     return await this.CategoryModel.findAll({include: [{model: Product}]});
   }
+
+  async findAllOfCategory(categoryTitle:string){
+    return await this.CategoryModel.findAll({where:{title: categoryTitle},include: {model: Product}})
+  }
+
+  
 
   async findOne(id: number) {
     const data = await this.CategoryModel.findOne({where:{id},include: [{model: Product}]})
