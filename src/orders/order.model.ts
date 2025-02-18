@@ -1,5 +1,6 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Cart } from "src/carts/cart.model";
+import { Payment } from "src/payments/payment.model";
 import { User } from "src/users/user.model";
 
 @Table({tableName: 'orders'})
@@ -48,4 +49,7 @@ export class Order extends Model<Order>{
 
     @BelongsTo(() => Cart)
     cart: Cart    
+
+    @HasMany(() => Payment)
+    payments: Payment[]
 }

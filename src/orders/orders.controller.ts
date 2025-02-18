@@ -22,6 +22,11 @@ export class OrdersController {
     return this.ordersService.findOne(+id);
   }
 
+  @Get('accept/:id')
+  acceptOne(@Param('id')id:string){
+    return this.ordersService.acceptOrder(+id)
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(+id, updateOrderDto);
