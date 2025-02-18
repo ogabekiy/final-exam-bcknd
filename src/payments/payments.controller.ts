@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { AuthGuard } from 'src/common/guards/authGuard';
+import { RoleGuard } from 'src/common/guards/roleGuard';
+import { Roles } from 'src/common/guards/roles.decorator';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentsService.create(createPaymentDto);
+  async create(@Body() createPaymentDto: CreatePaymentDto) {
+    return await this.paymentsService.create(createPaymentDto);
   }
 
+
+  @UseGuards(RoleGuard)
+  @Roles('admin','user')
   @Get()
-  findAll() {
-    return this.paymentsService.findAll();
-  }
+  async findAll(@Request() req:any) {
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentsService.findOne(+id);
-  }
+    const authRole = req.user.dataValues.role
+    const authId = req.user.dataValues.id
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentsService.update(+id, updatePaymentDto);
-  }
+    if(authRole !== 'admin'){
+      return await this.paymentsService.findAllOfUser(+authId)
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentsService.remove(+id);
+    return await this.paymentsService.findAll();
   }
 }

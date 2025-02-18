@@ -57,19 +57,25 @@ export class PaymentsService {
     return `Payment received. You still need to pay ${totalPrice - payment.amount} more.`;
   }
 
-  findAll() {
-    return `This action returns all payments`;
+  async findAll() {
+    return await this.PaymentModel.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
-  }
+  async findAllOfUser(userId: number) {
+    const orders = await this.OrderModel.findAll({
+        where: { user_id: userId }
+    });
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
-  }
+    if (orders.length === 0) {
+        return [];
+    }
+    const orderIds = orders.map(order => order.id);
 
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
-  }
+    const payments = await this.PaymentModel.findAll({
+        where: { order_id: orderIds }  
+    });
+
+    return payments;
+}
+
 }

@@ -73,6 +73,11 @@ export class ProductsService {
     
     return products;
   }
+
+  async findAllNotApprovedOfSeller(id:number) {
+    const products = await this.ProductModel.findAll({where: {approved: false,seller_id:id },});
+    return products;
+  }
   
 
   async update(id: number, updateProductDto: UpdateProductDto) {

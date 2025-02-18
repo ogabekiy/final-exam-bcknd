@@ -16,6 +16,7 @@ export class CategoriesController {
     return this.categoriesService.create(createCategoryDto);
   }
 
+
   @Get()
   findAll() {
     return this.categoriesService.findAll();
@@ -26,11 +27,15 @@ export class CategoriesController {
     return this.categoriesService.findOne(+id);
   }
 
+  @UseGuards(RoleGuard)
+  @Roles('admin')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.update(+id, updateCategoryDto);
   }
 
+  @UseGuards(RoleGuard)
+  @Roles('admin')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);

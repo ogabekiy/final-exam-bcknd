@@ -32,6 +32,10 @@ export class OrdersService {
     return await this.OrderModel.findAll({include: {model: Cart,include: [{model: CartProducts,include: [{model: Product}]}]}});
   }
 
+  async findAllOfUser(userId:number) {
+    return await this.OrderModel.findAll({where:{user_id:userId},include: {model: Cart,include: [{model: CartProducts,include: [{model: Product}]}]}});
+  }
+
   async findOne(id: number) {
     return await this.OrderModel.findOne({where: {id},include: {model: Cart,include: [{model: CartProducts,include: [{model: Product}]}]}});
   }

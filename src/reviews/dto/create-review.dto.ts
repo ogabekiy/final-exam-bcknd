@@ -2,7 +2,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, Min, Max } from "class-vali
 
 export class CreateReviewDto {
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     user_id: number;
 
     @IsNumber()

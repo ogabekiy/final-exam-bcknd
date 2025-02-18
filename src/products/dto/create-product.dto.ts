@@ -8,7 +8,7 @@ export class CreateProductDto {
   title: string;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Number)
   seller_id: number;
 

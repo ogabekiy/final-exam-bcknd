@@ -5,9 +5,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { CartProducts } from './cart_product.model';
 import { Cart } from 'src/carts/cart.model';
 import { Product } from 'src/products/product.model';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([CartProducts,Cart,Product])],
+  imports: [SequelizeModule.forFeature([CartProducts,Cart,Product]),UsersModule],
   controllers: [CartProductsController],
   providers: [CartProductsService],
 })

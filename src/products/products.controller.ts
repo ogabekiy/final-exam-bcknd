@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UploadedFiles, UseInterceptors, Get, Param, Patch, Delete, NotFoundException, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UploadedFiles, UseInterceptors, Get, Param, Patch, Delete, NotFoundException, UseGuards, Request, ForbiddenException } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -13,11 +13,18 @@ import { Roles } from 'src/common/guards/roles.decorator';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @UseGuards(RoleGuard)
+  @Roles('seller')
   @Post()
   @UseInterceptors(FilesInterceptor('images', 20, {
     dest: './uploads', 
   }))
-  async create(@Body() createProductDto: CreateProductDto, @UploadedFiles() files: Express.Multer.File[]) {
+  async create(@Body() createProductDto: CreateProductDto, @UploadedFiles() files: Express.Multer.File[],@Request() req:any) {
+
+    const authId = req.user.dataValues.id
+
+    createProductDto.seller_id = authId
+
     const uploadsDir = path.join(process.cwd(), 'uploads');
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
@@ -47,31 +54,83 @@ export class ProductsController {
     return this.productsService.findAll();
   }
   
+  @UseGuards(RoleGuard)
+  @Roles('admin','seller')
   @Get('all-notApproved')
-  notApproved(){
-      return this.productsService.findAllNotApproved();
-}
+  notApproved(@Request() req:any){
 
+    const authRole = req.user.dataValues.role
+    const authId = req.user.dataValues.id
+    // console.log(authRole);       
+
+    if(authRole == 'seller'){
+        return this.productsService.findAllNotApprovedOfSeller(+authId)
+    }
+    // findAllNotApprovedOfSeller
+
+      return this.productsService.findAllNotApproved();
+  }
+
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
+
     return this.productsService.findOne(+id);
   }
 
+  @UseGuards(RoleGuard)
+  @Roles('admin','seller')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateProductDto) {
+  async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateProductDto,@Request() req:any) {
+    
+    const authRole = req.user.dataValues.role
+    const authId = req.user.dataValues.id
+
+    const data = await this.productsService.findOne(+id)
+    
+    if(authRole !== 'admin' && authId !== +data.seller_id){
+      throw new ForbiddenException('nice try diddy')
+    }
+
+
     return this.productsService.update(+id, updateCategoryDto);
   }
 
+  @UseGuards(RoleGuard)
+  @Roles('admin','seller')
   @Patch('deleteImage/:id')
-  deleteImg(@Param('id') id: string, @Body() body: RemoveImg) {
+  async deleteImg(@Param('id') id: string, @Body() body: RemoveImg,@Request() req:any) {
+     
+    const authRole = req.user.dataValues.role
+    const authId = req.user.dataValues.id
+
+    const data = await this.productsService.findOne(+id)
+    
+    if(authRole !== 'admin' && authId !== +data.seller_id){
+      throw new ForbiddenException('nice try diddy')
+    }
+
   return this.productsService.removeImage(body.imgUrl, id);
   }
   
+
+  @UseGuards(RoleGuard)
+  @Roles('seller')
   @Patch('addImage/:id')
   @UseInterceptors(FilesInterceptor('images', 20, {
   dest: './uploads',
 }))
-async addImage(@Param('id') id: string, @UploadedFiles() files: Express.Multer.File[]) {
+async addImage(@Param('id') id: string, @UploadedFiles() files: Express.Multer.File[],@Request() req:any) {
+
+  const authRole = req.user.dataValues.role
+  const authId = req.user.dataValues.id
+
+  const data = await this.productsService.findOne(+id)
+  
+  if(authRole !== 'admin' && authId !== +data.seller_id){
+    throw new ForbiddenException('nice try diddy')
+  }
+
   const uploadsDir = path.join(process.cwd(), 'uploads');
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -108,8 +167,22 @@ async addImage(@Param('id') id: string, @UploadedFiles() files: Express.Multer.F
     return this.productsService.approveProduct(+id)
   }
 
+
+  @UseGuards(RoleGuard)
+  @Roles('admin','seller')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string,@Request() req:any) {
+
+    const authRole = req.user.dataValues.role
+    const authId = req.user.dataValues.id
+
+    const data = await this.productsService.findOne(+id)
+    
+    if(authRole !== 'admin' && authId !== +data.seller_id){
+      throw new ForbiddenException('nice try diddy')
+    }
+
+
     return this.productsService.remove(+id);
   }
 

@@ -64,6 +64,10 @@ export class CartProductsService {
     });
   }
 
+  async findAllOfUser(UserId:number) {
+    return await this.CartProductsModel.findAll({  where:{user_id:UserId}, include: { model: Cart },});
+  }
+
   async findOne(id: number) {
     const data = await this.CartProductsModel.findOne({
       where: { id },
