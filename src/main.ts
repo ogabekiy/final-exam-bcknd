@@ -4,9 +4,16 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cors from 'cors';
 async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.enableCors({
+    origin: 'http://localhost:3002', 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, 
+  });
 
   app.useBodyParser('json');
   app.useBodyParser('urlencoded', { extended: true });
