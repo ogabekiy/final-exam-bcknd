@@ -3,6 +3,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Payment } from './payment.model';
 import { Order } from 'src/orders/order.model';
+import { Cart } from 'src/carts/cart.model';
 
 @Injectable()
 export class PaymentsService {
@@ -34,7 +35,7 @@ export class PaymentsService {
   }
 
   async findAll() {
-    return await this.PaymentModel.findAll();
+    return await this.PaymentModel.findAll({include: {model: Order}});
   }
 
   async findAllOfUser(userId: number) {

@@ -37,6 +37,13 @@ export class OrdersController {
   }
 
   @UseGuards(RoleGuard)
+  @Roles("admin")
+  @Get('status/:status')
+  findAllOfStatus(@Param('status') status:string) {
+    return this.ordersService.findAllStatusOf(status);
+  }
+
+  @UseGuards(RoleGuard)
   @Roles('admin','user')
   @Get(':id')
   async findOne(@Param('id') id: string,@Request() req:any) {

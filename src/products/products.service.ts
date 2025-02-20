@@ -10,9 +10,16 @@ import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel(Product) private ProductModel: typeof Product){}
+  constructor(@InjectModel(Product) private ProductModel: typeof Product,
+  @InjectModel(Category) private categoryModel: typeof Category
+  ){}
 
   async create(createProductDto: CreateProductDto) {    
+    const categoryId = createProductDto.category_id
+    const data = await this.categoryModel.findOne({where: {id:categoryId}})
+    if(!data){
+      throw new NotFoundException('category not found')
+    }
     return await this.ProductModel.create(createProductDto);
   }
 
@@ -100,9 +107,11 @@ export class ProductsService {
       throw new NotFoundException('product not found')
     }
 
-    console.log(updateProductDto);
+    console.log(updateProductDto);  
+
+    const u = await this.ProductModel.update(updateProductDto,{where: {id}})
     
-    return await this.ProductModel.update(updateProductDto,{where: {id}});
+    return u;
   } 
 
 

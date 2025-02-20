@@ -6,7 +6,7 @@ export class CreateUserDto {
     firstname: string
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     surname: string
 
     @IsEmail()

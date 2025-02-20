@@ -22,6 +22,8 @@ export class UsersController {
   @Roles('admin')
   @Post('addAdmin')
   createAdmin(@Body() createUserDto: CreateUserDto) {
+    console.log(createUserDto);
+    
     return this.usersService.createAdmin(createUserDto);
   }
 
@@ -53,6 +55,16 @@ export class UsersController {
     
     return this.usersService.findOne(+id);
   }
+
+
+  @UseGuards(RoleGuard)
+  @Roles('admin')
+  @Get('/role/:role')
+  async getAllUsersWithRole(@Param('role') role: string ){
+        return await this.usersService.findUsersWithRole(role)
+  }
+
+
 
   @UseGuards(AuthGuard)
   @Patch(':id')

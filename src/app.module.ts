@@ -10,6 +10,9 @@ import { CartsModule } from './carts/carts.module';
 import { CartProductsModule } from './cart_products/cart_products.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { LikesModule } from './likes/likes.module';
 
 @Module({
   imports: [
@@ -24,6 +27,10 @@ import { PaymentsModule } from './payments/payments.module';
       autoLoadModels: true, 
       synchronize: true,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     UsersModule,
     SharedModule,
     AuthsModule,
@@ -33,7 +40,8 @@ import { PaymentsModule } from './payments/payments.module';
     CartsModule,
     CartProductsModule,
     OrdersModule,
-    PaymentsModule
+    PaymentsModule,
+    LikesModule
   ],
   controllers: [],
   providers: [],

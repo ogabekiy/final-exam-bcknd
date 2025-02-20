@@ -24,6 +24,8 @@ export class ReviewsController {
     return this.reviewsService.findAll();
   }
 
+  
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reviewsService.findOne(+id);
