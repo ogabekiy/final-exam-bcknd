@@ -19,8 +19,14 @@ export class CartsService {
 
   async findOne(id: number) {
     console.log('xa');
-    
+  
     return await this.CartModel.findOne({where: {id},include:{model: CartProducts}});
+  }
+
+  async findOneActiveCart(userID:number) {
+    console.log('xa');
+  
+    return await this.CartModel.findOne({where: [{status: 'active'},{user_id:userID }],include:{model: CartProducts}});
   }
 
   update(id: number, updateCartDto: UpdateCartDto) {
@@ -28,6 +34,6 @@ export class CartsService {
   }
 
   async remove(id: number) {
-    return await this.CartModel.destroy({where: {id}});
+    return await this.CartModel.destroy({where: [{user_id: id},{status: 'active'}]});
   }
 }

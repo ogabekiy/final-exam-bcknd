@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 export class CreateCartProductDto {
@@ -5,17 +6,18 @@ export class CreateCartProductDto {
     @IsOptional()
     user_id: number
 
+    @Transform(({ value }) => Number(value)) // String bo'lsa, numberga aylantiradi
     @IsNumber()
     @IsNotEmpty()
-    product_id: number
+    product_id: number;
 
     @IsNumber()
     @IsOptional()
     cart_id: number
 
     @IsNumber()
-    @IsNotEmpty()
-    quantity: number    
+    @IsOptional()
+    quantity?: number = 1;
 
 
 }

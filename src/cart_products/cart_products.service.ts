@@ -15,6 +15,10 @@ export class CartProductsService {
   ) {}
 
   async create(createCartProductDto: CreateCartProductDto) {
+
+    console.log(createCartProductDto);
+    
+
     let ActiveCart = await this.CartModel.findOne({
       where: { user_id: createCartProductDto.user_id, status: 'active' },
     });
@@ -64,8 +68,44 @@ export class CartProductsService {
     ActiveCart.total_price += product.price * createCartProductDto.quantity;
     await ActiveCart.save(); 
 
+    console.log('kartaga qoshildi');
+    
+
     return newCartProduct;
   }
+
+  async decreaseQuantity(product_id: number, user_id: number) {
+    const ActiveCart = await this.CartModel.findOne({
+      where: { user_id, status: 'active' },
+    });
+  
+    if (!ActiveCart) {
+      throw new NotFoundException('Active cart not found');
+    }
+  
+    const cartProduct = await this.CartProductsModel.findOne({
+      where: { cart_id: ActiveCart.id, product_id },
+    });
+  
+    if (!cartProduct) {
+      throw new NotFoundException('Product not found in the cart');
+    }
+  
+    if (cartProduct.quantity <= 1) {
+      throw new BadRequestException('Cannot decrease quantity below 1');
+    }
+  
+    cartProduct.quantity -= 1;
+    ActiveCart.total_price -= (await this.ProductModel.findByPk(product_id)).price;
+  
+    await cartProduct.save();
+    await ActiveCart.save();
+  
+    return cartProduct;
+  }
+  
+
+
 
   async findAll() {
     return await this.CartProductsModel.findAll({

@@ -91,4 +91,12 @@ export class CartProductsController {
 
     return this.cartProductsService.remove(+id);
   }
+
+  @UseGuards(RoleGuard)
+  @Roles('user')
+  @Patch('decrease/:id')
+   async decreaseQuantity(@Request() req:any,@Param('id') productId: string){
+    const authId = req.user.dataValues.id
+    return await this.cartProductsService.decreaseQuantity(+productId,+authId)
+   }
 }

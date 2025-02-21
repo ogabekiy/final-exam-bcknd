@@ -62,7 +62,7 @@ export class OrdersController {
 
   @UseGuards(RoleGuard)
   @Roles('user')
-  @Get('accept/:id')
+  @Patch('accept/:id')
   async acceptOne(@Param('id')id:string,@Request() req:any){
 
     const authRole = req.user.dataValues.role

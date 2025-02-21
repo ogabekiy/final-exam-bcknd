@@ -28,9 +28,11 @@ export class CartProducts extends Model<CartProducts> {
 
     @Column({
         type: DataType.INTEGER,
+        defaultValue: 1,
         allowNull: false,
     })
     quantity: number;
+    
 
     @BelongsTo(() => Product)
     product: Product;

@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Max, Min } from "class-validator";
 
 export class CreateUserDto {
@@ -20,7 +21,8 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @IsIn(['user', 'seller', 'admin'])
-    role?: string;
+    @IsOptional()
+    role?: string = 'user';
 
     @IsString()
     @IsNotEmpty()
@@ -38,9 +40,10 @@ export class CreateUserDto {
     gender?: string;
 
     @IsOptional()
+    @Transform(({ value }) => (typeof value === 'string' ? Number(value) : value))
     @IsNumber()
-    @Min(1)  
-    @Max(150) 
+    @Min(1)
+    @Max(150)
     age?: number;
 
 }
