@@ -54,6 +54,14 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
+  @UseGuards(RoleGuard)
+  @Roles('seller')
+  @Get('/ofSeller')
+  findAllOfSeller(@Request() req:any) {
+    const authId = req.user.dataValues.id
+    return this.productsService.findAllOfSeller(+authId);
+  }
+
   @Get('search/:query')
   async searchForProoduct(@Param('query') query: string){
     return await this.productsService.searchForProduct(query)
@@ -127,6 +135,9 @@ export class ProductsController {
 }))
 async addImage(@Param('id') id: string, @UploadedFiles() files: Express.Multer.File[],@Request() req:any) {
 
+  console.log(id);
+  
+
   const authRole = req.user.dataValues.role
   const authId = req.user.dataValues.id
 
@@ -159,9 +170,11 @@ async addImage(@Param('id') id: string, @UploadedFiles() files: Express.Multer.F
   });
 
   const newImages = [...(existingProduct.images || []), ...imageLinks];
-
+  console.log(newImages);
+  
   const updatedProduct = await this.productsService.update(+id, { images: newImages });
-
+  console.log(updatedProduct);
+  
   return updatedProduct;
 }
 

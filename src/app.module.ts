@@ -41,7 +41,7 @@ import { LikesModule } from './likes/likes.module';
     CartProductsModule,
     OrdersModule,
     PaymentsModule,
-    LikesModule
+    LikesModule,
   ],
   controllers: [],
   providers: [],

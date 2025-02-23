@@ -23,6 +23,14 @@ export class ReviewsController {
   findAll() {
     return this.reviewsService.findAll();
   }
+  @UseGuards(RoleGuard)
+  @Roles('seller')
+  @Get('ofSeller')
+  async findAllOfSeller(@Request() req:any){
+    const authId = req.user.dataValues.id
+    return await this.reviewsService.getAllReviewsOfSeller(+authId)
+  }
+
 
 
   @Get(':id')

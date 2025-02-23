@@ -15,16 +15,40 @@ export class ProductsService {
   ){}
 
   async create(createProductDto: CreateProductDto) {    
+
+    console.log(createProductDto);
+    
+
     const categoryId = createProductDto.category_id
     const data = await this.categoryModel.findOne({where: {id:categoryId}})
     if(!data){
       throw new NotFoundException('category not found')
     }
-    return await this.ProductModel.create(createProductDto);
+    const newProduct = await this.ProductModel.create(createProductDto);
+    console.log(newProduct);
+    
+    return newProduct
   }
 
   async findAll() {
     const products = await this.ProductModel.findAll({where: {approved:true},
+      include: [{ model: User }, { model: Category }, { model: Review }]
+    });
+  
+    products.forEach((product) => {
+      if (product.reviews && product.reviews.length > 0) {
+        const totalRating = product.reviews.reduce((acc, review) => acc + review.rating, 0);
+        product.dataValues.totalrating = totalRating;
+      } else {
+        product.dataValues.totalrating = 0; 
+      }
+    });
+  
+    return products;
+  }
+
+  async findAllOfSeller(sellerID:number) {
+    const products = await this.ProductModel.findAll({where: {approved:true,seller_id: sellerID},
       include: [{ model: User }, { model: Category }, { model: Review }]
     });
   
@@ -89,14 +113,18 @@ export class ProductsService {
 
 
   async searchForProduct(query: string) {
-    return await this.ProductModel.findAll({
-        where: {
-            [Op.or]: [
-                { title: { [Op.iLike]: `%${query}%` } },
-                { description: { [Op.iLike]: `%${query}%` } }
-            ],approved: true
-        }
-    });
+    console.log(query);
+
+    const data = await this.ProductModel.findAll({
+      where: {
+          [Op.or]: [
+              { title: { [Op.iLike]: `%${query}%` } },
+              { description: { [Op.iLike]: `%${query}%` } }
+          ],approved: true
+      }
+  });
+
+    return data
 }
   
   

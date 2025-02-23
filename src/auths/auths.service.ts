@@ -24,12 +24,18 @@ export class AuthsService {
         }
     
         if (createUserDto.password.length < 5) {
+          console.log('xa');
+          
           throw new ForbiddenException('Password must be at least 5 characters long');
         }
     
         createUserDto.password = await bcrypt.hash(createUserDto.password,10)
+
+        const user = await this.UserModel.create(createUserDto);
+        console.log(user);
         
-        return await this.UserModel.create(createUserDto);
+
+        return user
 
 
   }

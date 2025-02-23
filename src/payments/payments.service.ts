@@ -12,25 +12,33 @@ export class PaymentsService {
   ){}
   async create(createPaymentDto: CreatePaymentDto) {
 
+    console.log('pay',createPaymentDto);
+    
+
     const orderData = await this.OrderModel.findOne({ where: { id: createPaymentDto.order_id } });
 
     if (!orderData) {
       throw new NotFoundException('Order not found');
     }
 
-
     const totalPrice = orderData.total_price;
 
     if(totalPrice > createPaymentDto.amount){
       throw new ForbiddenException('yetarli pul tashlang')
     }
+
+    const payment = await this.PaymentModel.create({
+      order_id: createPaymentDto.order_id,
+      amount: createPaymentDto.amount,
+    });
     
     orderData.status = 'processin'
     await orderData.save()
 
     const paymentData = await this.PaymentModel.findOne({where:{order_id:createPaymentDto.order_id}})
-
-    return 'sizning buyurtmangiz prosecda'
+    console.log('xa');
+    
+    return paymentData
 
   }
 

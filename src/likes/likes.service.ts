@@ -31,7 +31,7 @@ export class LikesService {
   }
 
   async findAllOfUser(userid: number) {
-    return await this.likeModel.findAll({where:{user_id: userid}})
+    return await this.likeModel.findAll({where:{user_id: userid},include: [{model: Product}]})
   }
 
   

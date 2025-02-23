@@ -39,21 +39,21 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string,@Request() req:any) {
+  findOne(@Request() req:any) {
     const authRole = req.user.dataValues.role
 
     const authId = req.user.dataValues.id
     // console.log(authRole);
     console.log(authId);
-    console.log(id);
+    // console.log(id);
     
     
 
-    if(authRole !== 'admin' && authId !== +id){
-        throw new ForbiddenException('nice try diddy')
-    }
+    // if(authRole !== 'admin' && authId !== +id){
+    //     throw new ForbiddenException('nice try diddy')
+    // }
     
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(+authId);
   }
 
 
@@ -67,21 +67,19 @@ export class UsersController {
 
 
   @UseGuards(AuthGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto,@Request() req:any) {
+  @Patch()
+  update(@Body() updateUserDto: UpdateUserDto,@Request() req:any) {
     const authRole = req.user.dataValues.role
-
     const authId = req.user.dataValues.id
     // console.log(authRole);
     console.log(authId);
-    console.log(id);
     
     
 
-    if(authRole !== 'admin' && authId !== +id){
-        throw new ForbiddenException('nice try diddy')
-    }
-    return this.usersService.update(+id, updateUserDto);
+    // if(authRole !== 'admin' && authId !== +id){
+    //     throw new ForbiddenException('nice try diddy')
+    // }
+    return this.usersService.update(+authId, updateUserDto);
   }
 
   @UseGuards(AuthGuard)

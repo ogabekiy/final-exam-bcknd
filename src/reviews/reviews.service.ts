@@ -8,7 +8,9 @@ import { Product } from 'src/products/product.model';
 
 @Injectable()
 export class ReviewsService {
-  constructor(@InjectModel(Review) private ReviewModel: typeof Review){}
+  constructor(@InjectModel(Review) private ReviewModel: typeof Review,
+  @InjectModel(Product) private productModel: typeof Product
+  ){}
 
   async create(createReviewDto: CreateReviewDto) {
     const data = await this.ReviewModel.findOne({where: {user_id: createReviewDto.user_id,product_id: createReviewDto.product_id}})
@@ -53,5 +55,27 @@ export class ReviewsService {
 
   async remove(id: number) {
     return await this.ReviewModel.destroy({where:{id}})
+  }
+  
+  async getAllReviewsOfSeller(sellerId:number){
+      const products = await this.productModel.findAll({where:{seller_id: sellerId}})
+
+      const productIds = products.map((product) => product.id);
+
+      const reviews = await this.ReviewModel.findAll({
+        where: { product_id: productIds },
+        include: [
+          {
+            model: User,
+            attributes: ['firstname', 'id'], 
+          },
+          {
+            model: Product,
+            attributes: ['id', 'title'], 
+          },
+        ],
+      });
+
+      return reviews
   }
 }

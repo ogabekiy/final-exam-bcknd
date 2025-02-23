@@ -80,6 +80,9 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
+    console.log(updateUserDto);
+    
+
     const data = await this.UserModel.findOne({where:{id:id}})
     if(!data){
       throw new NotFoundException('user with this id dont exist')

@@ -9,8 +9,12 @@ export class AuthsController {
 
   @Post('register')
   create(@Body() createAuthDto: CreateUserDto) {
+
+    console.log(createAuthDto);
+    
+
     if(createAuthDto.role == 'admin'){
-      throw new ForbiddenException('gud try diddy')
+      throw new ForbiddenException('nice try diddy')
     }
     return this.authsService.create(createAuthDto);
   }

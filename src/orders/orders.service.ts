@@ -67,6 +67,9 @@ export class OrdersService {
   }
 
   async acceptOrder(id:number){
+
+    console.log(id);
+    
     const data = await this.findOne(id)
     if (!data) {
       throw new NotFoundException('Order not found');
@@ -75,4 +78,6 @@ export class OrdersService {
     await data.save()
     return 'order is delivered'
   }
+
+  
 }
