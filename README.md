@@ -1,3 +1,22 @@
+JWT_ACCESS_TOKEN=anythin
+.env ga jwt_access_token ni kiritish
+
+va db malumotlarniyam ozingizni db malumotlarga o'zgartirin
+
+va birinchi adminni postgres orqali kiritishni ham hisobga oling
+INSERT INTO users (firstname, surname, email, password, role, phone_number,gender,age)
+VALUES ('admin', 'adminov', 'admin@gmail.com', 'admin1111', 'admin', '901234567',male,17)
+RETURNING *;
+
+postgresda e-commerce database create qilishniyam unutmang
+
+va 3000 port ochiq ekanligiga ishonch hosil qiling
+
+frontend qismlani
+3001 yoki 3002 portda ochishga ishonch hosil qiling agar boshqa portlar kk bolsa main tsdagi enableCors ga qo'shin
+
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
